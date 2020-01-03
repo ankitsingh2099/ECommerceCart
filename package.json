@@ -1,0 +1,30 @@
+{
+  "name": "ecommercecart",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ankitsingh2099/ECommerceCart.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ankitsingh2099/ECommerceCart/issues"
+  },
+  "homepage": "https://github.com/ankitsingh2099/ECommerceCart#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "morgan": "^1.9.1",
+    "body-parser": "latest",
+    "cookie-parser": "^1.4.4"
+  },
+  "devDependencies": {
+    "continuation-local-storage": "^3.2.1",
+    "helmet": "^3.21.2",
+    "uuid": "^3.3.3"
+  }
+}

@@ -1,6 +1,6 @@
 const rootPrefix = '../..';
 
-exports.cartAdd = function (req, res) {
+exports.add = function (req, res) {
   const CartAddService = require(rootPrefix + '/app/services/CartAdd');
   let cartAdd = new CartAddService(req.decodedParams);
   

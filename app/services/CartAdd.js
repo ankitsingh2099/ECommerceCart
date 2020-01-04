@@ -1,5 +1,6 @@
 const rootPrefix = '../..',
   ServicesBase = require(rootPrefix + '/app/services/Base'),
+  ProductsModel = require(rootPrefix + '/models/Product'),
   CartsModel = require(rootPrefix + '/models/Cart'),
   CommonValidators = require(rootPrefix + '/helpers/validators');
 
@@ -8,6 +9,7 @@ class CartAdd extends ServicesBase{
     super(params);
     const oThis = this;
     oThis.productId = params.product_id;
+    oThis.userId = 1; // TODO: remove this hardcoding after adding cookie validation
   }
   
   /**
@@ -21,9 +23,11 @@ class CartAdd extends ServicesBase{
     
     await oThis._validateAndSanitize();
     
-    let dbRows = await oThis._insertOrUpdateCart();
+    await oThis._validateProductId();
     
-    return oThis._prepareResponse(dbRows);
+    await oThis._insertOrUpdateCart();
+    
+    return oThis._prepareResponse();
     
   }
   
@@ -36,11 +40,34 @@ class CartAdd extends ServicesBase{
   async _validateAndSanitize() {
     const oThis = this;
     
-    if(!CommonValidators.validateInteger(oThis.pageNumber)){
+    if(!CommonValidators.validateInteger(oThis.productId)){
       return Promise.reject({
         success: false,
         code: 422,
-        error: 'Given page number is not valid.'
+        error: 'Given product id is not valid.'
+      })
+    }
+  }
+  
+  /**
+   * Validate product id
+   *
+   * @returns {Promise<void>}
+   * @private
+   */
+  async _validateProductId() {
+    const oThis = this;
+    
+    let productData = await ProductsModel.findAll({
+      where: {id: oThis.productId}
+    });
+    
+    //Given product id is not present in the system
+    if(productData.length === 0){
+      return Promise.reject({
+        success: false,
+        code: 422,
+        error: 'Given product id is not present in the system.'
       })
     }
   }
@@ -53,39 +80,34 @@ class CartAdd extends ServicesBase{
    */
   async _insertOrUpdateCart() {
     const oThis = this;
-    
-    return CartsModel.findAll({
-      offset:((oThis.pageNumber - 1) * PAGE_LENGTH),
-      limit : PAGE_LENGTH,
-    });
+  
+    CartsModel.findAll({ where: { product_id: oThis.productId, user_id: oThis.userId }})
+      .then(function (cartData) {
+        // Check if record exists in db
+        if (cartData.length > 0) {
+          CartsModel.increment('quantity', { where: { product_id: oThis.productId, user_id: oThis.userId } })
+        } else {
+          CartsModel.create({
+            product_id: oThis.productId,
+            user_id: oThis.userId,
+            quantity: 1
+          })
+        }
+      });
   }
   
   /**
-   * Prepares Response
    *
-   * @param dbRows
-   * @returns {{result_type: string, is_next_page_present: boolean, products: []}}
+   * @returns {{code: number, success: boolean}}
    * @private
    */
-  _prepareResponse(dbRows) {
+  _prepareResponse() {
     const oThis = this;
-    
-    let responseData = {
+
+    return {
       success: true,
-      result_type: 'products',
-      products: [],
-      is_next_page_present: false
+      code: 200
     };
-    
-    if(dbRows.length === PAGE_LENGTH){
-      responseData.is_next_page_present = true;
-    }
-    
-    for(let i = 0 ; i < dbRows.length ; i++){
-      responseData.products.push(dbRows[i].dataValues);
-    }
-    
-    return responseData;
   }
 }
 

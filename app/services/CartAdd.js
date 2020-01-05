@@ -9,7 +9,7 @@ class CartAdd extends ServicesBase{
     super(params);
     const oThis = this;
     oThis.productId = params.product_id;
-    oThis.userId = 1; // TODO: remove this hardcoding after adding cookie validation
+    oThis.userId = params.user_id;
   }
   
   /**

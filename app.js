@@ -59,6 +59,7 @@ const assignParams = function(req, res, next) {
   // Also override any request params, related to signatures
   // And finally assign it to req.decodedParams
   req.decodedParams = Object.assign(getRequestParams(req), req.decodedParams);
+  req.decodedParams.user_id = 1; //This can be removed when login signup feature is added.
   
   next();
 };

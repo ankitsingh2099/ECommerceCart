@@ -12,7 +12,7 @@ class CartValue extends ServicesBase{
     super(params);
     const oThis = this;
     
-    oThis.userId = 1; // TODO: remove this hardcoding after adding cookie validation
+    oThis.userId = params.user_id;
     oThis.cartData = {};
     oThis.productsInCartArray = [];
   

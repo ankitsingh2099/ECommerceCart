@@ -5,6 +5,7 @@ const chai = require("chai"),
 const rootPrefix = "..",
   ProductsListService = require(rootPrefix + '/app/services/ProductList'),
   CartAddService = require(rootPrefix + '/app/services/CartAdd'),
+  CartRemoveService = require(rootPrefix + '/app/services/CartRemove'),
   CartValueService = require(rootPrefix + '/app/services/CartValue');
 
 
@@ -30,7 +31,7 @@ function productList() {
   });
 }
 
-function cart() {
+async function cartAdd() {
   it("test addition in cart", async function () {
     let cartAddServiceObj = new CartAddService({user_id: USER_ID, product_id: 1}),
       res = await cartAddServiceObj.perform().catch(function (err) {
@@ -41,7 +42,7 @@ function cart() {
   });
 }
 
-function cartValue() {
+async function cartValue() {
   it("test cart value", async function () {
     let cartValueServiceObj = new CartValueService({user_id: USER_ID}),
       res = await cartValueServiceObj.perform().catch(function (err) {
@@ -52,11 +53,23 @@ function cartValue() {
   });
 }
 
+async function removeFromCart() {
+  it("test removal from cart", async function () {
+    let cartRemoveServiceObj = new CartRemoveService({user_id: USER_ID, product_id: 1}),
+      res = await cartRemoveServiceObj.perform().catch(function (err) {
+        console.log(JSON.stringify(err));
+        assert.fail('cart removal testcase failed');
+      });
+    assert.equal(res.success, true);
+  });
+}
+
 
 async function testcases() {
   await productList();
-  await cart();
+  await cartAdd();
   await cartValue();
+  await removeFromCart();
 }
 
 testcases();

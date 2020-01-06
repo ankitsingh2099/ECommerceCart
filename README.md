@@ -32,3 +32,8 @@ node ./bin/www
 
 ####Test APIs with postman
 Postman collection is available at /test/postman/ folder
+
+#### Test services by running following command
+```
+mocha --timeout 120000 test/* --exit
+```
